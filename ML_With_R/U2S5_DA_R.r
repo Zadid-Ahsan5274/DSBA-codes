@@ -154,3 +154,61 @@ accuracy <- sum(diag(table(dataset_oscar$Winner,predicted_winner_tree)))/nrow(da
 accuracy
 
 # Regression tree on butler dataset
+tree_model_regression <- rpart(Time ~ Miles + Deliveries, data=dataset_large,method="anova",control=rpart.control(maxdepth=8))
+summary(tree_model_regression)
+
+# Plot tree
+plot(tree_model_regression)
+rpart.plot(tree_model_regression,type=3,extra=101,under=TRUE,main="Regression tree for predicting time")
+
+# Predict time based on tree model regression
+predicted_time_tree <- predict(tree_model_regression,dataset_large)
+predicted_time_tree
+
+error_large <- dataset_large$Time - predicted_time_tree
+error_square_large <- error_large^2
+error_square_large
+
+mean(error_square_large)
+sqrt(mean(error_square_large))
+
+# Clustering with k-means iris dataset
+# read iris dataset
+library(datasets)
+data(iris)
+head(iris)
+
+# Load dataset as dataframe
+iris_df <- as.data.frame(iris)
+iris_df <- iris_df[,-5]
+head(iris_df)
+
+plot(iris_df$Sepal.Length,iris_df$Sepal.Width,main="Sepal Length vs. Sepal Width",xLab = "Sepal Length",yLab="Sepal Width")
+plot(iris_df$Sepal.Length,iris_df$Petal.Width,main="Sepal Length vs. Sepal Width",xLab = "Sepal Length",yLab="Sepal Width")
+
+pairs(iris_df,main="Pair Plot")
+
+k <- 3
+set.seed(123)
+kmeans_model <- kmeans(iris_df,centers=k)
+kmeans_model
+
+# Get the cluster assignments
+Y <- kmeans_model$cluster
+Y
+sse <- kmeansMod$tot.withinss
+centroids <- kmeansMod$centers
+
+# Plot kmeans
+plot(iris_df,col=kmeans_model$cluster)
+points(kmeans_model$centers,col=1:k,pch=8,cex=2)
+
+# Plot SSE for different k values
+sse_values <- c()
+
+for (k in 1:10){
+    kmeansMod <- kmeans(iris_df,centers=k,iter.max=1000)
+    sse_values <- c(sse_values,kmeansMod$tot.withinss)
+}
+plot(sse_values,type="b",xLab="k",yLab="sse")
+plot(1:10,sse_values,type="b",xLab="k",yLab="sse")
